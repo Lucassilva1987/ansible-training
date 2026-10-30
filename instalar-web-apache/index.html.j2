@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Servidor Web Automático</title>
+    <style> body { font-family: Arial; padding: 50px; } </style>
+</head>
+<body>
+    <h1>Servidor Web provisionado com sucesso!</h1>
+    <p><strong>Responsável:</strong> {{ admin_name }}</p>
+    <hr>
+    <h3>Informações do Servidor (Coletadas dinamicamente):</h3>
+    <ul>
+        <li><strong>Hostname:</strong> {{ ansible_hostname }}</li>
+        <li><strong>Sistema Operativo:</strong> {{ ansible_distribution }} {{ ansible_distribution_version }}</li>
+        <li><strong>Endereço IP (eth0):</strong> {{ ansible_default_ipv4.address }}</li>
+    </ul>
+</body>
+</html>
