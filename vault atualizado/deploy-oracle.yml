@@ -1,0 +1,18 @@
+
+---
+# Exemplo de utilização do Ansible Vault para proteger credenciais.
+- name: Exemplo de utilização do Ansible Vault com Oracle 19c
+  hosts: oracle_servers
+  become: true
+
+  # Carrega as variáveis armazenadas no arquivo criptografado.
+  vars_files:
+    - segredos.yml
+
+  tasks:
+    - name: Simular utilização da senha do banco
+      ansible.builtin.debug:
+        msg: "Conectando ao banco com a credencial protegida."
+
+      # Impede que informações da tarefa sejam exibidas nos logs.
+      no_log: true

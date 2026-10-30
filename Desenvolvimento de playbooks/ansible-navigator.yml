@@ -1,0 +1,25 @@
+
+---
+# Configurações do Ansible Navigator
+ansible-navigator:
+
+  # Configura o ambiente de execução (Execution Environment).
+  execution-environment:
+
+    # Imagem de container que contém o Ansible e suas dependências.
+    image: utility.lab.example.com:5000/ansible-automation-platform-25/ee-supported-rhel8
+
+    # Configura o comportamento ao baixar a imagem.
+    pull:
+
+      # Baixa a imagem somente quando ela não estiver disponível localmente.
+      policy: missing
+
+      # Argumentos adicionais utilizados durante o download da imagem.
+      arguments:
+        # Desativa a validação do certificado TLS.
+        # Utilizado neste laboratório por causa do ambiente interno.
+        - "--tls-verify=false"
+
+  # Exibe a saída da execução diretamente no terminal.
+  mode: stdout

@@ -1,0 +1,10 @@
+
+---
+- name: Verificar o fuso horário dos servidores
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Imprimir o fuso horário na tela
+      ansible.builtin.debug:
+        msg: "O servidor está configurado para o fuso: {{ fuso_horario }}"

@@ -1,0 +1,24 @@
+
+---
+- name: Padronizar diretorios do servidor
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Criar estrutura de pastas em /opt
+      ansible.builtin.file:
+
+        # Utiliza a variável item para receber cada caminho do loop.
+        path: "{{ item }}"
+
+        # Garante que o caminho exista como diretório.
+        state: directory
+
+        # Define as permissões de acesso do diretório.
+        mode: "0755"
+
+      # Lista de diretórios que serão criados.
+      loop:
+        - /opt/scripts
+        - /opt/logs
+        - /opt/backups

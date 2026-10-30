@@ -1,0 +1,8 @@
+
+# Servidores localizados no Brasil
+[brasil]
+app01
+
+# Servidores localizados na Europa
+[europa]
+db01

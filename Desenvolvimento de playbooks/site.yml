@@ -1,0 +1,30 @@
+
+---
+- name: Deploy de servidor web Nginx
+  hosts: web
+  become: true
+
+  tasks:
+    - name: Garantir que o pacote Nginx esteja instalado
+      ansible.builtin.dnf:
+        name: nginx
+        state: present
+
+    - name: Copiar arquivo de configuração da página
+      ansible.builtin.copy:
+        src: files/index.html
+        dest: /var/www/html/index.html
+        mode: "0644"
+
+    - name: Garantir que o Nginx esteja iniciado e habilitado no boot
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: Liberar HTTP no firewall
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        immediate: true
+        state: enabled
