@@ -1,0 +1,35 @@
+---
+- name: Fazer deploy do servidor web com template dinamico
+  hosts: web
+  # dá os privilegios de root
+  become: true 
+  
+  tasks:
+    - name: Instalar o Apache (httpd)
+      ansible.builtin.dnf:
+        name: httpd
+        state: present
+    
+    - name: Garantir que o servico Apache esta ativo
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
+
+    - name: Liberar porta HTTP no firewall
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        state: enabled
+        immediate: true
+      ignore_errors: true
+
+    - name: Gerar e enviar a pagina HTML baseada nas variaveis
+      ansible.builtin.template:
+        # pegar o corpo desse caminho 
+        src: templates/index_avancado.html.j2
+        # utilizar no host esse caminho
+        dest: /var/www/html/index.html
+        owner: apache
+        group: apache
+        mode: '0644'

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ambiente: {{ stage | upper }}</title>
+    <style>
+        body { 
+            font-family: monospace; 
+            background: {% if stage == 'prod' %}#ffe6e6{% else %}#e6ffe6{% endif %}; 
+            padding: 20px; 
+        }
+    </style>
+</head>
+<body>
+    <h1>Status do Servidor: {{ stage | upper }}</h1>
+    <p><strong>Hostname:</strong> {{ ansible_facts['hostname'] }}</p>
+    <p><strong>Sistema Operacional:</strong> {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}</p>
+    <p><strong>IP Principal:</strong> {{ ansible_facts['default_ipv4']['address'] }}</p>
+</body>
+</html>

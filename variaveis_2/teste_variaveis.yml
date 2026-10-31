@@ -1,0 +1,8 @@
+---
+- name: testa precedencia de variavel
+  hosts: web
+
+  tasks:
+    - name: Imprimir o valor da variavel
+      ansible.builtin.debug:
+        msg: "O servidor esta configurado para o ambiente de: {{ stage }}" 
