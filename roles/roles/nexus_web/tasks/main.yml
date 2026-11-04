@@ -1,0 +1,45 @@
+---
+- name: Instalar pacote do servidor web Apache
+  ansible.builtin.dnf:
+    name: httpd
+    state: present
+
+- name: Garantir diretorio raiz do VirtualHost
+  ansible.builtin.file:
+    path: "/var/www/vhosts/{{ ansible_hostname }}"
+    state: directory
+    mode: "0755"
+
+- name: Gerar index.html com informacoes do sistema e ambiente
+  ansible.builtin.copy:
+    dest: "/var/www/vhosts/{{ ansible_hostname }}/index.html"
+    content: |
+      <!DOCTYPE html>
+      <html>
+      <body style="font-family: monospace; background-color: {% if environment_stage == 'prod' %}#ffe6e6{% else %}#e6ffe6{% endif %};">
+        <h1>{{ nexus_app_name }} - {{ environment_stage | upper }}</h1>
+        <p>Host: {{ ansible_hostname }} ({{ ansible_default_ipv4.address }})</p>
+        <p>SO: {{ ansible_distribution }} {{ ansible_distribution_version }}</p>
+        <p>Porta: {{ http_port }}</p>
+      </body>
+      </html>
+    mode: "0644"
+
+- name: Renderizar configuracao do VirtualHost a partir do template
+  ansible.builtin.template:
+    src: vhost.conf.j2
+    dest: /etc/httpd/conf.d/nexus_vhost.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: "refresh_nexus_web"
+
+# Forçamos a execução dos handlers antes de checar se o serviço subiu
+- name: Executar handlers imediatamente para aplicar restart
+  ansible.builtin.meta: flush_handlers
+
+- name: Habilitar e garantir que o servico httpd esteja ativo
+  ansible.builtin.service:
+    name: httpd
+    state: started
+    enabled: true

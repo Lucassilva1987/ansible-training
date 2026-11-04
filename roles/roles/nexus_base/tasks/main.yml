@@ -1,0 +1,47 @@
+---
+# 1. Condicional com facts do sistema
+- name: "Validar pre-requisitos de hardware (RAM)"
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['memtotal_mb'] >= min_ram_required_mb
+    fail_msg: "Capacidade insuficiente: Servidor possui menos de {{ min_ram_required_mb }}MB de RAM."
+    success_msg: "Capacidade de hardware validada com sucesso."
+
+# 2. Loop simples com index_var e formatação de label
+- name: "Criar estrutura de diretorios da aplicacao"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop: "{{ nexus_directories }}"
+  loop_control:
+    index_var: dir_idx
+    label: "[Estrutura {{ dir_idx + 1 }}/{{ nexus_directories | length }}] {{ item }}"
+
+# 3. Loop sobre dicionários com condicional interna (active: true)
+- name: "Provisionar usuarios de servico ativos"
+  ansible.builtin.user:
+    name: "{{ item.username }}"
+    uid: "{{ item.uid }}"
+    shell: "{{ item.shell }}"
+    group: "{{ item.primary_group }}"
+    groups: "{{ item.secondary_groups }}"
+    append: true
+    state: present
+  loop: "{{ nexus_system_users }}"
+  when: item.active | bool
+  loop_control:
+    label: "Usuario Ativo: {{ item.username }} (UID: {{ item.uid }})"
+
+# 4. Desprovisionamento condicional (active: false)
+- name: "Garantir remocao de contas inativas/revogadas"
+  ansible.builtin.user:
+    name: "{{ item.username }}"
+    state: absent
+    remove: true
+  loop: "{{ nexus_system_users }}"
+  when: not (item.active | bool)
+  loop_control:
+    label: "Removendo Usuario Inativo: {{ item.username }}"

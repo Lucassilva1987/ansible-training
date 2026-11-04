@@ -1,0 +1,25 @@
+# {{ ansible_managed }}
+# Configuracao do VirtualHost para o ambiente: {{ environment_stage | upper }}
+{% if http_port | int != 80 %}
+Listen {{ http_port }}
+{% endif %}
+
+<VirtualHost *:{{ http_port }}>
+    ServerAdmin {{ vhost_server_admin }}
+    ServerName {{ ansible_fqdn }}
+    DocumentRoot /var/www/vhosts/{{ ansible_hostname }}
+
+    ErrorLog {{ nexus_base_dir }}/logs/{{ ansible_hostname }}_error.log
+    CustomLog {{ nexus_base_dir }}/logs/{{ ansible_hostname }}_access.log combined
+
+    <Directory /var/www/vhosts/{{ ansible_hostname }}>
+        AllowOverride None
+        Require all granted
+        {% if enable_debug_banner %}
+        # Banner ativo em ambiente de Desenvolvimento/Testes
+        Header set X-Environment "Development"
+        {% else %}
+        Header set X-Environment "Production"
+        {% endif %}
+    </Directory>
+</VirtualHost>

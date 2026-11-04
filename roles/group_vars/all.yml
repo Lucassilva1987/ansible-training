@@ -1,0 +1,32 @@
+---
+# Parâmetros gerais compartilhados por todos os nós
+nexus_app_name: "Nexus Portal"
+nexus_base_dir: "/opt/nexus"
+min_ram_required_mb: 512
+
+# Diretórios que precisam existir em qualquer servidor
+nexus_directories:
+  - "{{ nexus_base_dir }}/bin"
+  - "{{ nexus_base_dir }}/logs"
+  - "{{ nexus_base_dir }}/data"
+
+# Contas técnicas corporativas gerenciadas via hash
+nexus_system_users:
+  - username: "nexus_deployer"
+    uid: 2501
+    shell: "/bin/bash"
+    primary_group: "wheel"
+    secondary_groups: ["adm"]
+    active: true
+  - username: "nexus_auditor"
+    uid: 2502
+    shell: "/sbin/nologin"
+    primary_group: "nobody"
+    secondary_groups: []
+    active: true
+  - username: "nexus_legacy"
+    uid: 2503
+    shell: "/sbin/nologin"
+    primary_group: "nobody"
+    secondary_groups: []
+    active: false  # Conta desativada para validar remoção

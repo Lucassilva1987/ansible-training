@@ -1,0 +1,19 @@
+---
+- name: Alerta no terminal de recarga
+  ansible.builtin.debug:
+    msg: "RECARGA: Modificacao de configuracao web detectada. Reiniciando Apache."
+  listen: "refresh_nexus_web"
+
+- name: Reiniciar servico Apache
+  ansible.builtin.service:
+    name: httpd
+    state: restarted
+  listen: "refresh_nexus_web"
+
+- name: Registrar evento de auditoria de deploy
+  ansible.builtin.lineinfile:
+    path: "{{ nexus_base_dir }}/logs/deploy_audit.log"
+    line: "[{{ ansible_date_time.iso8601 }}] Vhost atualizado no ambiente {{ environment_stage | upper }}."
+    create: true
+    mode: "0640"
+  listen: "refresh_nexus_web"

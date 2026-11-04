@@ -1,0 +1,5 @@
+---
+environment_stage: "prod"
+http_port: 80
+enable_debug_banner: false
+vhost_server_admin: "admin@nexus.com"

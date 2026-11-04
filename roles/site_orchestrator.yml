@@ -1,0 +1,37 @@
+---
+- name: Orquestrador Corporativo do Nexus Portal
+  hosts: web_servers
+  become: true
+  vars:
+    # Se nenhum step for passado via CLI (-e target_step=...), executa todas as etapas
+    target_step: "all"
+
+  # Executa antes de qualquer role
+  pre_tasks:
+    - name: "Pre-check: Validar conectividade e fatos basicos"
+      ansible.builtin.debug:
+        msg: "Iniciando pipeline de provisionamento para o host: {{ inventory_hostname }} (Ambiente: {{ environment_stage }})"
+
+  # Invocação modular das Roles
+  tasks:
+    - name: "Step 01: Executar Role Base (Diretorios, Hardware e Usuarios)"
+      ansible.builtin.include_role:
+        name: nexus_base
+      when: target_step in ['all', 'step01', 'base']
+
+    - name: "Step 02: Executar Role Web (Apache, Templates, Handlers e Vhost)"
+      ansible.builtin.include_role:
+        name: nexus_web
+      when: target_step in ['all', 'step02', 'web']
+
+  # Executa após a conclusão de todas as roles
+  post_tasks:
+    - name: "Post-check: Validar resposta do VirtualHost localmente"
+      ansible.builtin.command: "curl -s -o /dev/null -w '%{http_code}' http://localhost:{{ http_port }}"
+      register: _http_test
+      changed_when: false
+      failed_when: _http_test.stdout != "200"
+
+    - name: "Resumo final de integridade"
+      ansible.builtin.debug:
+        msg: "SUCESSO: {{ inventory_hostname }} respondeu HTTP 200 na porta {{ http_port }}."

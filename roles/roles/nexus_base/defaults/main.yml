@@ -1,0 +1,3 @@
+---
+# Valores padrão de segurança
+enforce_security_limits: true

@@ -1,0 +1,5 @@
+---
+environment_stage: "dev"
+http_port: 8080
+enable_debug_banner: true
+vhost_server_admin: "dev-team@nexus.local"
